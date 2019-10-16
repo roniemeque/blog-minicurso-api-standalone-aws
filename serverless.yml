@@ -61,6 +61,18 @@ functions:
               paths:
                 - post_path: true
                 - user_id: true
+  apaga_post:
+    handler: handler.apaga_post
+    events:
+      - http:
+          path: /{user_id}/posts/{post_path}/apagar
+          method: get
+          cors: true
+          request:
+            parameters:
+              paths:
+                - post_path: true
+                - user_id: true
 
 plugins:
   - serverless-bundle

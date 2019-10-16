@@ -23,7 +23,7 @@ export const busca_posts = async ({ pathParameters }) => {
       userId
     });
   } catch (error) {
-    return fail({ error, dbComCache, userId });
+    return fail({ error, userId });
   }
 };
 
@@ -37,7 +37,7 @@ export const busca_post = async ({ pathParameters }) => {
   try {
     const { collection, dbComCache } = await getCollection("posts");
 
-    const [post] = await collection.find({ path: postPath }).toArray();
+    const [post] = await collection.find({ path: postPath, userId }).toArray();
 
     return success({
       post,
@@ -46,7 +46,29 @@ export const busca_post = async ({ pathParameters }) => {
       postPath
     });
   } catch (error) {
-    return fail({ error, dbComCache, userId, postPath });
+    return fail({ error, userId, postPath });
+  }
+};
+
+// deleta um post especifico do user com post_path
+export const apaga_post = async ({ pathParameters }) => {
+  const { user_id: userId, post_path: postPath } = pathParameters || {};
+  if (!userId) {
+    return fail({ error: "falta user_id. Ex: /api/fulano/criar" });
+  }
+
+  try {
+    const { collection, dbComCache } = await getCollection("posts");
+
+    await collection.deleteOne({ path: postPath, userId });
+
+    return success({
+      dbComCache,
+      userId,
+      postPath
+    });
+  } catch (error) {
+    return fail({ error, userId, postPath });
   }
 };
 
@@ -88,6 +110,6 @@ export const cria_post = async ({ pathParameters, body }) => {
       parsedBody
     });
   } catch (error) {
-    return fail({ error, dbComCache, userId, parsedBody });
+    return fail({ error, userId, parsedBody });
   }
 };
